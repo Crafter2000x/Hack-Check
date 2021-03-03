@@ -76,12 +76,12 @@ namespace Hack_Check.Controllers
             }
 
             SetupNewAccount setupNewAccount = new SetupNewAccount();
-            //Hash and Salt password
+            
             if (verifyNewAccount.EmailAlreadyTaken(setupNewAccount.DatabaseReadyCreateAccountViewModel(createAccountViewModel)))
             {
 
             }
-            //Add it all to the Database
+            //Hash and Salt password and add it all to the Database
 
 
             //Return to the login page
