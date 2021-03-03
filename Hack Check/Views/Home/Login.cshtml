@@ -1,13 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Login to Hack Check";
 }
-
-@model TestViewModel
 
 <div class="container-fluid">
     <div class="row">
         <div class="col" style="text-align:left">
-            
+            left colm
         </div>
         <div class="col userbox" style="text-align:center">
             <form>
@@ -17,25 +15,13 @@
                 <input type="password" id="password" name="login" placeholder="Password" required><br />
                 <input type="submit" value="Log In"> <br />
                 <br />
-                <a href="#">Forgot password?</a> <a href="#">Don't have a account?</a> <br />
+                <a href="#">Forgot password?</a> <a asp-action="CreateAccount" asp-controller="Home">Don't have a account?</a> <br />
                 <br />
             </form>
-
-
-        <form asp-controller="Home" asp-action="Index">
-            <input type="text" asp-for="@Model.Password" />
-            <input type="submit" value="Update" /><br />
-
-            @if (Model.HashedPassword != null)
-            {
-                <input type="text" value="@Model.HashedPassword" readonly />
-            }
-            <br/>
-        </form>
-            
         </div>
+
         <div class="col" style="text-align:right">
+            right colum
         </div>
     </div>
 </div>
-
