@@ -79,5 +79,15 @@ namespace Hack_Check.Classes
             return salt;
         }
 
+        public bool AddAccountToDatabase(CreateAccountViewModel DatabaseReadyViewModel) 
+        {
+            Queries queries = new Queries();
+
+            if (queries.AddAccountToDatabase(DatabaseReadyViewModel) == true)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

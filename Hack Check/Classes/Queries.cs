@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using Hack_Check.Models;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,9 +55,24 @@ namespace Hack_Check.Classes
             }
         }
 
+        public bool AddAccountToDatabase(CreateAccountViewModel DatabaseReadyViewModel) 
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("INSERT INTO [dbo].[Users] SELECT '" + DatabaseReadyViewModel.Username + "', '" + DatabaseReadyViewModel.Email + "', '" + DatabaseReadyViewModel.Password + "','" +DatabaseReadyViewModel.Salt+ "';", tConnection);
 
+                tConnection.Open();
 
+                int tRows = sqlCommand.ExecuteNonQuery();
+                if (tRows > 0)
+                {
+                    return true;
+                }
+            }
 
+            return false;
 
+        }                    
+        
     }
 }

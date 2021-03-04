@@ -75,17 +75,15 @@ namespace Hack_Check.Controllers
                 return RedirectToAction("CreateAccount", "Home");
             }
 
-            SetupNewAccount setupNewAccount = new SetupNewAccount();
-            
-            if (verifyNewAccount.EmailAlreadyTaken(setupNewAccount.DatabaseReadyCreateAccountViewModel(createAccountViewModel)))
-            {
-
-            }
             //Hash and Salt password and add it all to the Database
+            SetupNewAccount setupNewAccount = new SetupNewAccount();
+            if (setupNewAccount.AddAccountToDatabase(setupNewAccount.DatabaseReadyCreateAccountViewModel(createAccountViewModel)) == true)
+            {
+                //Return to the login page
+                return RedirectToAction("Index", "Home");
+            }
 
-
-            //Return to the login page
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("CreateAccount", "Home");
         }
 
 
