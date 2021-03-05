@@ -22,12 +22,8 @@ namespace Hack_Check.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index(TestViewModel TestViewModel)
+        public IActionResult Index()
         {
-            if (TestViewModel.Password != null)
-            {
-                TestViewModel.HashedPassword = ComputeStringToSha256Hash(TestViewModel.Password);
-            }
             //return View(TestViewModel);
             return RedirectToAction("Login", "Home");
         }
@@ -86,46 +82,17 @@ namespace Hack_Check.Controllers
             return RedirectToAction("CreateAccount", "Home");
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        static string ComputeStringToSha256Hash(string plainText)
+        public IActionResult LoginUser(LoginViewModel loginViewModel) 
         {
-            // Create a SHA256 hash from string   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                // Computing Hash - returns here byte array
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(plainText));
+            VerifyLogin verifyLogin = new VerifyLogin();
 
-                // now convert byte array to a string   
-                StringBuilder stringbuilder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    stringbuilder.Append(bytes[i].ToString("x2"));
-                }
-                return stringbuilder.ToString();
+            if (verifyLogin.VerifyLoginData(loginViewModel) == false)
+            {
+                return RedirectToAction("Index", "Home");
             }
+
+            return RedirectToAction("CreateAccount", "Home");
+
         }
     }
 }

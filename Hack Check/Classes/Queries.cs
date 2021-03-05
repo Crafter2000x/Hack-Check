@@ -69,10 +69,88 @@ namespace Hack_Check.Classes
                     return true;
                 }
             }
-
             return false;
-
-        }                    
+        }  
         
+        public bool CheckForUsernameInDatabase(string Username) 
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("SELECT Username FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
+
+                tConnection.Open();
+
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if ((string)reader["Username"] == Username)
+                            {
+                                tConnection.Close();
+                                return true;
+                            }
+                        }    
+                    }
+                    tConnection.Close();
+                    return false;
+                }
+            }
+        }
+
+        public string RetrieveUserSalt(string Username) 
+        {
+            using(SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("SELECT Salt FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
+
+                tConnection.Open();
+
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        string UserSalt = null;
+
+                        while (reader.Read()) 
+                        {
+                            UserSalt = (string)reader["Salt"];
+                            tConnection.Close();
+                            return UserSalt;
+                        } 
+                    }
+                    tConnection.Close();
+                    return null;
+                }
+            }
+        }
+
+        public bool MatchPasswords(string Password) 
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("SELECT Password FROM dbo.Users WHERE Password = '" + Password + "'", tConnection);
+
+                tConnection.Open();
+
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            if ((string)reader["Password"] == Password)
+                            {
+                                tConnection.Close();
+                                return true;
+                            }
+                        }
+                    }
+                    tConnection.Close();
+                    return false;
+                }
+            }
+        }
     }
 }

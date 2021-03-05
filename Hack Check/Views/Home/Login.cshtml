@@ -2,26 +2,29 @@
     ViewData["Title"] = "Login to Hack Check";
 }
 
+@model LoginViewModel
+
 <div class="container-fluid">
     <div class="row">
         <div class="col" style="text-align:left">
-            left colm
+            Left colum
         </div>
         <div class="col userbox" style="text-align:center">
-            <form>
-                <h1>Hack Check</h1><br />
+            <form asp-action="LoginUser" asp-controller="Home">
+                <h1>Hack Check</h1>
                 <br />
-                <input type="text" id="login" name="login" placeholder="Username" required><br />
-                <input type="password" id="password" name="login" placeholder="Password" required><br />
-                <input type="submit" value="Log In"> <br />
+                <input type="text" name="Username" asp-for="Username" placeholder="Your username" required />
+                <input type="password" name="Password" asp-for="Password" placeholder="Your password" required />
+                <br />
+                <br />
+                <input type="submit" value="Login" class="btn-success" />
                 <br />
                 <a href="#">Forgot password?</a> <a asp-action="CreateAccount" asp-controller="Home">Don't have a account?</a> <br />
                 <br />
             </form>
         </div>
-
         <div class="col" style="text-align:right">
-            right colum
+            Right colum
         </div>
     </div>
 </div>
