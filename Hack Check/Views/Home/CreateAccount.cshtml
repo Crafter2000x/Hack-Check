@@ -10,20 +10,43 @@
             Left colum
         </div>
         <div class="col userbox" style="text-align:center">
-            <form asp-action="CreateNewAccount" asp-controller="Home">
-                <h1>Hack Check</h1>
-                <h2>Create a account</h2>
+            <form asp-action="CreateAccount" asp-controller="Home">
+                <div>
+                    <h1>Hack Check</h1>
+                    <h2>Create a account</h2>
+                </div>
+
                 <br />
-                <input type="text" name="Username" asp-for="Username" placeholder="Your username" required />
-                <input type="email" name="Email" asp-for="Email" placeholder="Your email adress" required />
-                <input type="password" name="Password" asp-for="Password" placeholder="Your password" required />
-                <input type="password" name="ConfirmPassword" asp-for="ConfirmPassword" placeholder="Confirm password" required />
+
+                <div class="form-group">
+                    <input asp-for="Username" class="form-control" placeholder="Enter a username">
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <input asp-for="Email" class="form-control" placeholder="Enter a email address">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <input asp-for="Password" class="form-control" placeholder="Enter a password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm your password">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="submit" value="Create your account" class="btn-success" />
+                </div>
+
                 <br />
-                <br />
-                <input type="submit" value="Create your account" class="btn-success" />
-                <br />
-                <br />
+
             </form>
+
         </div>
         <div class="col" style="text-align:right">
             Right colum
