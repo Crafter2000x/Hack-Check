@@ -85,7 +85,7 @@ namespace Hack_Check.Controllers
 
             if (verifyNewAccount.ServerSideValidation(createAccountViewModel) == false)
             {
-                ModelState.AddModelError("", "Server validation failed, do you have javascript enabled?");
+                ModelState.AddModelError("", "Server validation failed");
                 return View();
             }
 
@@ -101,20 +101,26 @@ namespace Hack_Check.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginUser(LoginViewModel loginViewModel) 
+        public IActionResult Login(LoginViewModel loginViewModel) 
         {
             VerifyLogin verifyLogin = new VerifyLogin();
 
+            if (verifyLogin.ServerSideValidation(loginViewModel) == false)
+            {
+                ModelState.AddModelError("", "Username or password is incorrect ;)");
+                return View();
+            }
+
             if (verifyLogin.VerifyLoginData(loginViewModel) == false)
             {
-                return RedirectToAction("Login", "Home");
+                ModelState.AddModelError("", "Username or password is inccorect");
+                return View();
             }
 
             HttpContext.Session.SetString("Username", loginViewModel.Username);
             return RedirectToAction("Home", "Home");
         }
 
-        [HttpPost]
         public IActionResult LogoutUser()
         {
             HttpContext.Session.Clear();

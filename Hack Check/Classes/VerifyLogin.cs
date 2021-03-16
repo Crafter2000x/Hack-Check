@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using Hack_Check.Models;
+
+/// <summary>
+/// In this file the login data of the user is checked, first it will check if the data actually is acording to the requirments for that data and then afterwards start comparing the data
+/// to what is in the database. To compare the password the salt will also be retrieved 
+/// </summary>
 
 namespace Hack_Check.Classes
 {
@@ -37,6 +38,25 @@ namespace Hack_Check.Classes
             }
 
             if (queries.MatchPasswords(ComputeStringToShHasa256Hash(combined)) == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool ServerSideValidation(LoginViewModel loginViewModel) 
+        {
+            //Check if username is even the allowed lentgh
+
+            if (loginViewModel.Username.Length < 5 || loginViewModel.Username.Length > 24)
+            {
+                return false;
+            }
+
+            //Check if password is even the allowed lentgh
+
+            if (loginViewModel.Password.Length < 6 || loginViewModel.Password.Length > 100)
             {
                 return false;
             }

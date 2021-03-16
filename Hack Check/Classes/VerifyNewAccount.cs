@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Hack_Check.Models;
+﻿using Hack_Check.Models;
+
+/// <summary>
+/// In this file the data a user fills in is check for a couple things: a server side check if the two passwords match, if the username is already taken, if the email is already taken,
+/// if the user has javascript disabled in his browser or edit's the html of the page this file also checks if the fields are not empty, the email is valid, the username is valid and if 
+/// the password is valid. If any of these conditions return false the user is informed
+/// </summary>
 
 namespace Hack_Check.Classes
 {
@@ -57,24 +59,14 @@ namespace Hack_Check.Classes
 
             //Check for usename requirments 
 
-            if (createAccountViewModel.Username.Length < 5 )
-            {
-                return false;
-            }
-
-            if (createAccountViewModel.Username.Length > 24)
+            if (createAccountViewModel.Username.Length < 5 || createAccountViewModel.Username.Length > 24)
             {
                 return false;
             }
 
             //Check for password requirments
 
-            if (createAccountViewModel.Password.Length < 6)
-            {
-                return false;
-            }
-
-            if (createAccountViewModel.Password.Length > 100)
+            if (createAccountViewModel.Password.Length < 6 || createAccountViewModel.Password.Length > 100)
             {
                 return false;
             }

@@ -10,17 +10,32 @@
             Left colum
         </div>
         <div class="col userbox" style="text-align:center">
-            <form asp-action="LoginUser" asp-controller="Home">
-                <h1>Hack Check</h1>
+            <form asp-action="Login" asp-controller="Home">
+                <div>
+                    <h1>Hack Check</h1>
+                    <h2>Login</h2>
+                </div>
+
                 <br />
-                <input type="text" name="Username" asp-for="Username" placeholder="Your username" required />
-                <input type="password" name="Password" asp-for="Password" placeholder="Your password" required />
-                <br />
-                <br />
-                <input type="submit" value="Login" class="btn-success" />
-                <br />
-                <a href="#">Forgot password?</a> <a asp-action="CreateAccount" asp-controller="Home">Don't have a account?</a> <br />
-                <br />
+
+                <div class="form-group">
+                    <input asp-for="Username" class="form-control" placeholder="Username">
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input asp-for="Password" class="form-control" placeholder="Password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="submit" value="Login" class="btn-success" />
+                </div>
+
+                <div class="form-group">
+                    <a asp-action="CreateAccount">Forgot password?</a> <a asp-action="CreateAccount" asp-controller="Home">Don't have a account?</a> <br />
+                </div>
             </form>
         </div>
         <div class="col" style="text-align:right">
