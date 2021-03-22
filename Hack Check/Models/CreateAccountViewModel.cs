@@ -24,6 +24,7 @@ namespace Hack_Check.Models
         [Compare("Password", ErrorMessage = "Your passwords needs to match the confrim password")]
         public string ConfirmPassword { get; set; }
 
+        // Salt gets set during account setup
         public string Salt { get; set; }
     }
 }

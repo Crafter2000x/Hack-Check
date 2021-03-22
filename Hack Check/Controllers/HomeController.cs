@@ -58,6 +58,23 @@ namespace Hack_Check.Controllers
             return RedirectToAction("Login", "Home");
         }
 
+        public IActionResult Account()
+        {
+            if (CheckForSession())
+            {
+                AccountActions accountActions = new AccountActions();
+                AccountViewModel accountViewModel = accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId")));
+
+                if (accountViewModel == null)
+                {
+                    ModelState.AddModelError("","A error has occurred while try to get your information, please contact support");
+                }
+
+                return View(accountViewModel);
+            }
+            return RedirectToAction("Login", "Home");
+        }
+
         [HttpPost]
         public IActionResult CreateAccount(CreateAccountViewModel createAccountViewModel) 
         {
@@ -117,7 +134,18 @@ namespace Hack_Check.Controllers
                 return View();
             }
 
+            int UserId = verifyLogin.FillLoginWithUserId(loginViewModel.Username);
+
+            if (UserId == -1)
+            {
+                ModelState.AddModelError("", "An error occurred while processing your request, please contact support");
+                return View();
+            }
+
+            loginViewModel.UserId = UserId;
+
             HttpContext.Session.SetString("Username", loginViewModel.Username);
+            HttpContext.Session.SetString("UserId", loginViewModel.UserId.ToString());
             return RedirectToAction("Home", "Home");
         }
 
@@ -129,7 +157,7 @@ namespace Hack_Check.Controllers
 
         private bool CheckForSession() 
         {
-            if (HttpContext.Session.GetString("Username") == null)
+            if (HttpContext.Session.GetString("Username") == null && HttpContext.Session.GetString("UserId") == null)
             {
                 return false;
             }

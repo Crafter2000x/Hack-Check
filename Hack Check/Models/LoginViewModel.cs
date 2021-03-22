@@ -9,5 +9,6 @@ namespace Hack_Check.Models
         [Required(ErrorMessage = "Please enter a password")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        public int UserId { get; set; }
     }
 }

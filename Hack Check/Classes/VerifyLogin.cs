@@ -64,6 +64,20 @@ namespace Hack_Check.Classes
             return true;
         }
 
+        public int FillLoginWithUserId(string Username) 
+        {
+            Queries queries = new Queries();
+
+            int RetrievedId = queries.RetrieveUserId(Username);
+
+            if ( RetrievedId != -1)
+            {
+                return RetrievedId;
+            }
+
+            return -1;
+        }
+
         public static string ComputeStringToShHasa256Hash(string plainText)
         {
             //Create a SHA256 hash from string   

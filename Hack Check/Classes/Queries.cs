@@ -126,6 +126,33 @@ namespace Hack_Check.Classes
             }
         }
 
+        public int RetrieveUserId(string Username)
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
+
+                tConnection.Open();
+
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        int UserId = -1;
+
+                        while (reader.Read())
+                        {
+                            UserId = (int)reader["Id"];
+                            tConnection.Close();
+                            return UserId;
+                        }
+                    }
+                    tConnection.Close();
+                    return -1;
+                }
+            }
+        }
+
         public bool MatchPasswords(string Password) 
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
@@ -149,6 +176,39 @@ namespace Hack_Check.Classes
                     }
                     tConnection.Close();
                     return false;
+                }
+            }
+        }
+
+        public AccountViewModel AccountInformation(int UserId)
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("SELECT * FROM dbo.Users WHERE Id = '" + UserId + "'", tConnection);
+
+                tConnection.Open();
+
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            AccountViewModel accountViewModel = new AccountViewModel
+                            {
+                                Id = (int)reader["Id"],
+                                Username = (string)reader["Username"],
+                                Email = (string)reader["Email"],
+                                Password = (string)reader["Password"],
+                                Salt = (string)reader["Salt"]
+                            };
+
+                            tConnection.Close();
+                            return accountViewModel;
+                        }  
+                    }
+                    tConnection.Close();
+                    return null;
                 }
             }
         }
