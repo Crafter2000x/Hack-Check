@@ -21,6 +21,7 @@ namespace Hack_Check.Controllers
             _logger = logger;
         }
 
+        #region Return views for pages
         public IActionResult Index()
         {
             if (CheckForSession())
@@ -74,11 +75,20 @@ namespace Hack_Check.Controllers
             }
             return RedirectToAction("Login", "Home");
         }
+        #endregion
 
+        #region Post functions
         [HttpPost]
         public IActionResult CreateAccount(CreateAccountViewModel createAccountViewModel) 
         {
             VerifyNewAccount verifyNewAccount = new VerifyNewAccount();
+
+            //First check if they have the right requirments
+            if (verifyNewAccount.ServerSideValidation(createAccountViewModel) == false)
+            {
+                ModelState.AddModelError("", "Server validation failed");
+                return View();
+            }
 
             //Check if the username is already in use
             if (verifyNewAccount.UsernameAlreadyTaken(createAccountViewModel) == true)
@@ -100,12 +110,6 @@ namespace Hack_Check.Controllers
                 return View();
             }
 
-            if (verifyNewAccount.ServerSideValidation(createAccountViewModel) == false)
-            {
-                ModelState.AddModelError("", "Server validation failed");
-                return View();
-            }
-
             //Hash and Salt password and add it all to the Database
             SetupNewAccount setupNewAccount = new SetupNewAccount();
             if (setupNewAccount.AddAccountToDatabase(setupNewAccount.DatabaseReadyCreateAccountViewModel(createAccountViewModel)) == true)
@@ -124,7 +128,7 @@ namespace Hack_Check.Controllers
 
             if (verifyLogin.ServerSideValidation(loginViewModel) == false)
             {
-                ModelState.AddModelError("", "Username or password is incorrect ;)");
+                ModelState.AddModelError("", "Username or password is incorrect");
                 return View();
             }
 
@@ -149,6 +153,68 @@ namespace Hack_Check.Controllers
             return RedirectToAction("Home", "Home");
         }
 
+        [HttpPost]
+        public IActionResult Account(AccountViewModel accountViewModel) 
+        {
+            AccountActions accountActions = new AccountActions();
+
+            if (accountActions.ServerSideValidation(accountViewModel) == false)
+            {
+                ModelState.AddModelError("Password", "Please fill out the fields correctly");
+                return View(accountViewModel);
+            }
+
+            accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            if (accountActions.UpdatePassword(accountActions.SecurePassword(accountViewModel)) == false)
+            {
+                ModelState.AddModelError("Password", "Something went wrong updating your password");
+                return View(accountViewModel);
+            }
+
+            ModelState.AddModelError("", "Password has been updated");
+            return View(accountViewModel);
+
+
+            // this is for changing the username what i scraped later
+
+            // Check if they want to change the password or username
+            //if (accountViewModel.Username != null)
+            //{
+            //    AccountActions accountActions = new AccountActions();
+
+            //    if (accountActions.UsernameAlreadyTaken(accountViewModel) == true)
+            //    {
+            //        ModelState.AddModelError("Username", "Username is already in use");
+            //        return View(accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId"))));
+            //    }
+
+            //    if (accountActions.UsernameServerValidation(accountViewModel) == false)
+            //    {
+            //        ModelState.AddModelError("Username", "Server validation failed");
+            //        return View(accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId"))));
+            //    }
+
+            //    accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+
+            //    if (accountActions.UsernameUpdate(accountViewModel) == false)
+            //    {
+            //        ModelState.AddModelError("Username", "Failed to update your username");
+            //        return View(accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId"))));
+            //    }
+
+            //    HttpContext.Session.SetString("Username", accountViewModel.Username);
+            //    ModelState.AddModelError("", "Username has been updated");
+            //    return View(accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId"))));
+            //}
+            //else if (accountViewModel.Password != null && accountViewModel.ConfirmPassword != null)
+            //{
+
+            //}
+        }
+        #endregion
+
+        #region Other functions
         public IActionResult LogoutUser()
         {
             HttpContext.Session.Clear();
@@ -169,5 +235,6 @@ namespace Hack_Check.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        #endregion
     }
 }

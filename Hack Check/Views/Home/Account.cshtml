@@ -18,27 +18,48 @@
             <br />
 
             <div class="form-group">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-success"></div>
             </div>
 
             <div class="form-group">
-                <span class="text-info" style="text-align: left">Username</span>
-                <input asp-for="Username" class="form-control" readonly>
-            </div>
-
-            <div class="form-group">
-                <span class="text-info" style="text-align: left">Email</span>
+                <span class="text-info">Email - cannot be changed</span>
                 <input asp-for="Email" class="form-control" readonly>
             </div>
 
             <div class="form-group">
-                <button>Change password</button>
-                <button>Change username</button>
+                <span class="text-info">Username - cannot be changed</span>
+                <input asp-for="Username" class="form-control" readonly>
+            </div>
+
+            <form asp-action="Account" asp-controller="Home">
+
+                <input asp-for="Email" readonly hidden>
+                <input asp-for="Username" readonly hidden>
+
+                <div class="form-group">
+                    <span class="text-info">Password - can be changed</span>
+                    <input asp-for="Password" class="form-control">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <span class="text-info">Password - confirm new password</span>
+                    <input asp-for="ConfirmPassword" class="form-control">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Update password" class="btn-success" />
+                </div>
+
+            </form>
+
+            <div class="form-group">
+
             </div>
         </div>
         <div class="col" style="text-align:right">
             Right colum
         </div>
     </div>
-</div> 
-
+</div>

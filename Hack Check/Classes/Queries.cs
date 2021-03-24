@@ -199,8 +199,6 @@ namespace Hack_Check.Classes
                                 Id = (int)reader["Id"],
                                 Username = (string)reader["Username"],
                                 Email = (string)reader["Email"],
-                                Password = (string)reader["Password"],
-                                Salt = (string)reader["Salt"]
                             };
 
                             tConnection.Close();
@@ -212,5 +210,58 @@ namespace Hack_Check.Classes
                 }
             }
         }
+
+        public bool UpdatePasswordInDatabase(AccountViewModel accountViewModel) 
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Password = '" + accountViewModel.Password + "',Salt = '" + accountViewModel.Salt + "' WHERE Id = '" + accountViewModel.Id + "'", tConnection);
+
+                tConnection.Open();
+
+                int tRows = sqlCommand.ExecuteNonQuery();
+
+                if (tRows > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //public bool UpdateUsernameInDatabase(AccountViewModel accountViewModel) 
+        //{
+        //    using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+        //    {
+        //        SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Username = '" + accountViewModel.Username + "' WHERE Id = '" + accountViewModel.Id + "'", tConnection);
+
+        //        tConnection.Open();
+
+        //        int tRows = sqlCommand.ExecuteNonQuery();
+
+        //        if (tRows > 0)
+        //        {
+        //            return true;
+        //        }
+        //    }
+
+        //    return false;
+        //}
     }
 }

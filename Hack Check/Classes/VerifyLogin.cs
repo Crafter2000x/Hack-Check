@@ -44,9 +44,15 @@ namespace Hack_Check.Classes
 
             return true;
         }
-
+                    
         public bool ServerSideValidation(LoginViewModel loginViewModel) 
         {
+            // Make sure non of the fields are empty
+            if (loginViewModel.Username == null || loginViewModel.Password == null)
+            {
+                return false;
+            }
+
             //Check if username is even the allowed lentgh
 
             if (loginViewModel.Username.Length < 5 || loginViewModel.Username.Length > 24)
