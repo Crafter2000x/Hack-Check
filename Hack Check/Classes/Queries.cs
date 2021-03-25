@@ -17,7 +17,9 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString)) 
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Username = '"+ Username + "'", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Username = @Username", tConnection);
+
+                sqlCommand.Parameters.Add(new SqlParameter("@Username",Username));
 
                 tConnection.Open();
 
@@ -38,7 +40,9 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Email = '" + Email + "'", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Email = @Email", tConnection);
+
+                sqlCommand.Parameters.Add(new SqlParameter("@Email", Email));
 
                 tConnection.Open();
 
@@ -59,7 +63,12 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("INSERT INTO [dbo].[Users] SELECT '" + DatabaseReadyViewModel.Username + "', '" + DatabaseReadyViewModel.Email + "', '" + DatabaseReadyViewModel.Password + "','" +DatabaseReadyViewModel.Salt+ "';", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("INSERT INTO [dbo].[Users] SELECT @Username, @Email, @Password, @Salt", tConnection);
+
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", DatabaseReadyViewModel.Username));
+                sqlCommand.Parameters.Add(new SqlParameter("@Email", DatabaseReadyViewModel.Email));
+                sqlCommand.Parameters.Add(new SqlParameter("@Password", DatabaseReadyViewModel.Password));
+                sqlCommand.Parameters.Add(new SqlParameter("@Salt", DatabaseReadyViewModel.Salt));
 
                 tConnection.Open();
 
@@ -76,8 +85,8 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Username FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
-
+                SqlCommand sqlCommand = new SqlCommand("SELECT Username FROM dbo.Users WHERE Username = @Username", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", Username));
                 tConnection.Open();
 
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
@@ -103,8 +112,8 @@ namespace Hack_Check.Classes
         {
             using(SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Salt FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
-
+                SqlCommand sqlCommand = new SqlCommand("SELECT Salt FROM dbo.Users WHERE Username = @Username", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", Username));
                 tConnection.Open();
 
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
@@ -130,8 +139,8 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Username = '" + Username + "'", tConnection);
-
+                SqlCommand sqlCommand = new SqlCommand("SELECT Id FROM dbo.Users WHERE Username = @Username", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", Username));
                 tConnection.Open();
 
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
@@ -157,7 +166,8 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Password FROM dbo.Users WHERE Password = '" + Password + "'", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT Password FROM dbo.Users WHERE Password = @Password", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Password", Password));
 
                 tConnection.Open();
 
@@ -184,7 +194,8 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT * FROM dbo.Users WHERE Id = '" + UserId + "'", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT * FROM dbo.Users WHERE Id = @Id", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Id", UserId));
 
                 tConnection.Open();
 
@@ -215,7 +226,11 @@ namespace Hack_Check.Classes
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Password = '" + accountViewModel.Password + "',Salt = '" + accountViewModel.Salt + "' WHERE Id = '" + accountViewModel.Id + "'", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Password = @Password ,Salt = @Salt WHERE Id = @Id", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Password", accountViewModel.Password));
+                sqlCommand.Parameters.Add(new SqlParameter("@Salt", accountViewModel.Salt));
+                sqlCommand.Parameters.Add(new SqlParameter("@Id", accountViewModel.Id));
+
 
                 tConnection.Open();
 
