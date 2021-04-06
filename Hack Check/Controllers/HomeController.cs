@@ -75,6 +75,28 @@ namespace Hack_Check.Controllers
             }
             return RedirectToAction("Login", "Home");
         }
+
+        public IActionResult ChangePassword()
+        {
+
+            if (CheckForSession())
+            {
+                return View();
+            }
+            return RedirectToAction("Login", "Home");
+        }
+
+
+        public IActionResult ChangeUsername()
+        {
+
+            if (CheckForSession())
+            {
+                return View();
+            }
+            return RedirectToAction("Login", "Home");
+        }
+
         #endregion
 
         #region Post functions
@@ -154,27 +176,33 @@ namespace Hack_Check.Controllers
         }
 
         [HttpPost]
-        public IActionResult Account(AccountViewModel accountViewModel) 
+        public IActionResult ChangePassword(AccountViewModel accountViewModel)
         {
             AccountActions accountActions = new AccountActions();
 
+            accountViewModel.Username = HttpContext.Session.GetString("Username");
+            accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+
             if (accountActions.ServerSideValidation(accountViewModel) == false)
             {
-                ModelState.AddModelError("Password", "Please fill out the fields correctly");
-                return View(accountViewModel);
+                ModelState.AddModelError("Id", "Please fill out the fields correctly");
+                return View();
             }
 
-            accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+            if (accountActions.CheckPassword(accountViewModel) == false)
+            {
+                ModelState.AddModelError("OldPassword", "The password was incorrect");
+                return View();
+            }
 
             if (accountActions.UpdatePassword(accountActions.SecurePassword(accountViewModel)) == false)
             {
-                ModelState.AddModelError("Password", "Something went wrong updating your password");
-                return View(accountViewModel);
+                ModelState.AddModelError("Id", "Something went wrong updating your password");
+                return View();
             }
 
             ModelState.AddModelError("", "Password has been updated");
-            return View(accountViewModel);
-
+            return View();
 
             // this is for changing the username what i scraped later
 
@@ -211,6 +239,7 @@ namespace Hack_Check.Controllers
             //{
 
             //}
+
         }
         #endregion
 
@@ -223,7 +252,7 @@ namespace Hack_Check.Controllers
 
         private bool CheckForSession() 
         {
-            if (HttpContext.Session.GetString("Username") == null && HttpContext.Session.GetString("UserId") == null)
+            if (HttpContext.Session.GetString("Username") == null || HttpContext.Session.GetString("UserId") == null)
             {
                 return false;
             }

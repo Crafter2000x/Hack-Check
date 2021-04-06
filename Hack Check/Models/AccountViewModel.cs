@@ -9,6 +9,10 @@ namespace Hack_Check.Models
 
         public string Email { get; set; }
 
+        [Required(ErrorMessage = "Please enter your password")]
+        [DataType(DataType.Password)]
+        public string OldPassword { get; set; }
+
         [Required(ErrorMessage = "Please enter a vaild password")]
         [DataType(DataType.Password)]
         [MinLength(6, ErrorMessage = "Password needs to be atleast 6 characters long")]

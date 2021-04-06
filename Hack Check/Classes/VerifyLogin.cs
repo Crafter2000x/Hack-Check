@@ -37,7 +37,7 @@ namespace Hack_Check.Classes
                 combined = loginViewModel.Password + Salt;
             }
 
-            if (queries.MatchPasswords(ComputeStringToShHasa256Hash(combined)) == false)
+            if (queries.MatchPasswords(loginViewModel.Username, ComputeStringToShHasa256Hash(combined)) == false)
             {
                 return false;
             }

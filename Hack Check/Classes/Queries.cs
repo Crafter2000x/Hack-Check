@@ -162,11 +162,12 @@ namespace Hack_Check.Classes
             }
         }
 
-        public bool MatchPasswords(string Password) 
+        public bool MatchPasswords(string Username, string Password) 
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
-                SqlCommand sqlCommand = new SqlCommand("SELECT Password FROM dbo.Users WHERE Password = @Password", tConnection);
+                SqlCommand sqlCommand = new SqlCommand("SELECT * FROM dbo.Users WHERE Username = @Username AND Password = @Password", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", Username));
                 sqlCommand.Parameters.Add(new SqlParameter("@Password", Password));
 
                 tConnection.Open();
@@ -177,6 +178,7 @@ namespace Hack_Check.Classes
                     {
                         while (reader.Read())
                         {
+                            //double check
                             if ((string)reader["Password"] == Password)
                             {
                                 tConnection.Close();

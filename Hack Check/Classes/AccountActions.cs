@@ -22,7 +22,7 @@ namespace Hack_Check.Classes
         public bool ServerSideValidation(AccountViewModel accountViewModel) 
         {
             // Make sure non of the fields are empty
-            if (accountViewModel.Password == null || accountViewModel.ConfirmPassword == null)
+            if (accountViewModel.Password == null || accountViewModel.ConfirmPassword == null || accountViewModel.OldPassword == null || accountViewModel.Id <= 0 || accountViewModel.Username == null)
             {
                 return false;
             }
@@ -40,6 +40,35 @@ namespace Hack_Check.Classes
             }
 
             return true;
+        }
+
+        public bool CheckPassword(AccountViewModel accountViewModel) 
+        {
+            Queries queries = new Queries();
+
+            accountViewModel.Salt = queries.RetrieveUserSalt(accountViewModel.Username);
+
+            char firstletter = char.Parse(accountViewModel.Username.Substring(0, 1));
+            int index = char.ToUpper(firstletter) - 64;
+
+            // If is L or lower puts the salt in front of the password if higher the L puts it after, harder to brute force
+            if (index <= 13)
+            {
+                accountViewModel.OldPassword = accountViewModel.Salt + accountViewModel.OldPassword;
+            }
+            else if (index > 13)
+            {
+                accountViewModel.OldPassword = accountViewModel.OldPassword + accountViewModel.Salt;
+            }
+
+            accountViewModel.OldPassword = ComputeStringToShHasa256Hash(accountViewModel.OldPassword);
+
+            if (queries.MatchPasswords(accountViewModel.Username, accountViewModel.OldPassword))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public AccountViewModel SecurePassword(AccountViewModel accountViewModel) 
