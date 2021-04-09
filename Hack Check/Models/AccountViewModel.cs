@@ -5,9 +5,15 @@ namespace Hack_Check.Models
     public class AccountViewModel
     {
         public int Id { get; set; }
+        
         public string Username { get; set; }
 
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "Please enter a valid username")]
+        [MinLength(5, ErrorMessage = "Username needs to be atleast 5 characters long")]
+        [MaxLength(24, ErrorMessage = "Username can't be longer then 24 characters")]
+        public string NewUsername { get; set; }
 
         [Required(ErrorMessage = "Please enter your password")]
         [DataType(DataType.Password)]

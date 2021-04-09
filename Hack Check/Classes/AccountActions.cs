@@ -19,7 +19,7 @@ namespace Hack_Check.Classes
             return FilledModel;
         }
 
-        public bool ServerSideValidation(AccountViewModel accountViewModel) 
+        public bool ServerSideValidationPassword(AccountViewModel accountViewModel) 
         {
             // Make sure non of the fields are empty
             if (accountViewModel.Password == null || accountViewModel.ConfirmPassword == null || accountViewModel.OldPassword == null || accountViewModel.Id <= 0 || accountViewModel.Username == null)
@@ -42,10 +42,48 @@ namespace Hack_Check.Classes
             return true;
         }
 
-        public bool CheckPassword(AccountViewModel accountViewModel) 
+        public bool ServerSideValidationUsername(AccountViewModel accountViewModel)
+        {
+            // Make sure non of the fields are empty
+            if ( accountViewModel.OldPassword == null || accountViewModel.Id <= 0 || accountViewModel.Username == null || accountViewModel.NewUsername == null)
+            {
+                return false;
+            }
+
+            //Check for username requirments
+            if (accountViewModel.NewUsername.Length < 5 || accountViewModel.NewUsername.Length > 24)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool CheckUsernameAvailable(AccountViewModel accountViewModel)
+        {
+            Queries queries = new Queries();
+            if (queries.CheckUsernameAlreadyTaken(accountViewModel.NewUsername) == true)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool UpdateUsername(AccountViewModel accountViewModel)
         {
             Queries queries = new Queries();
 
+            if (queries.UpdateUsernameInDatabase(accountViewModel) == true)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckPassword(AccountViewModel accountViewModel) 
+        {
+            Queries queries = new Queries();
+            
             accountViewModel.Salt = queries.RetrieveUserSalt(accountViewModel.Username);
 
             char firstletter = char.Parse(accountViewModel.Username.Substring(0, 1));
@@ -122,7 +160,7 @@ namespace Hack_Check.Classes
         }
 
         //Converts the salt into a string to use
-        private static int saltLengthLimit = 32;
+        private static readonly int saltLengthLimit = 32;
         private static string GetSalt()
         {
             byte[] bytes = GetSalt(saltLengthLimit);
@@ -145,37 +183,5 @@ namespace Hack_Check.Classes
             }
             return salt;
         }
-
-
-        //public bool UsernameAlreadyTaken(AccountViewModel accountViewModel) 
-        //{
-        //    Queries queries = new Queries();
-        //    if (queries.CheckUsernameAlreadyTaken(accountViewModel.Username) == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-
-        //}
-
-        //public bool UsernameServerValidation(AccountViewModel accountViewModel) 
-        //{
-        //    if (accountViewModel.Username.Length < 5 || accountViewModel.Username.Length > 24)
-        //    {
-        //        return false;
-        //    }
-        //    return true;
-        //}
-
-        //public bool UsernameUpdate(AccountViewModel accountViewModel)
-        //{
-        //    Queries queries = new Queries();
-
-        //    if (queries.UpdateUsernameInDatabase(accountViewModel) == true)
-        //    {
-        //        return true;
-        //    }
-        //    return false;
-        //}
     }
 }

@@ -11,7 +11,7 @@ namespace Hack_Check.Classes
 {
     public class Queries
     {
-        private string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
+        private static readonly string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
 
         public bool CheckUsernameAlreadyTaken(string Username) 
         {
@@ -247,38 +247,26 @@ namespace Hack_Check.Classes
             return false;
         }
 
+        public bool UpdateUsernameInDatabase(AccountViewModel accountViewModel)
+        {
+            using (SqlConnection tConnection = new SqlConnection(ConnectionString))
+            {
+                SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Username = @Username WHERE Id = @Id", tConnection);
+                sqlCommand.Parameters.Add(new SqlParameter("@Username", accountViewModel.NewUsername));
+                sqlCommand.Parameters.Add(new SqlParameter("@Id", accountViewModel.Id));
 
 
+                tConnection.Open();
 
+                int tRows = sqlCommand.ExecuteNonQuery();
 
+                if (tRows > 0)
+                {
+                    return true;
+                }
+            }
 
-
-
-
-
-
-
-
-
-
-
-        //public bool UpdateUsernameInDatabase(AccountViewModel accountViewModel) 
-        //{
-        //    using (SqlConnection tConnection = new SqlConnection(ConnectionString))
-        //    {
-        //        SqlCommand sqlCommand = new SqlCommand("UPDATE dbo.Users SET Username = '" + accountViewModel.Username + "' WHERE Id = '" + accountViewModel.Id + "'", tConnection);
-
-        //        tConnection.Open();
-
-        //        int tRows = sqlCommand.ExecuteNonQuery();
-
-        //        if (tRows > 0)
-        //        {
-        //            return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
+            return false;
+        }
     }
 }
