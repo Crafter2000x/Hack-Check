@@ -1,14 +1,9 @@
 ﻿using Hack_Check.Models;
-using Hack_Check.Classes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using HackCheck.Business;
 
 namespace Hack_Check.Controllers
 {
@@ -20,8 +15,6 @@ namespace Hack_Check.Controllers
         {
             _logger = logger;
         }
-
-#region Return views for pages
 
         public IActionResult Index()
         {
@@ -64,8 +57,8 @@ namespace Hack_Check.Controllers
         {
             if (CheckForSession())
             {
-                AccountActions accountActions = new AccountActions();
-                AccountViewModel accountViewModel = accountActions.FilledAccountViewModel(int.Parse(HttpContext.Session.GetString("UserId")));
+                AccountContainer accountContainer = new AccountContainer();
+                AccountViewModel accountViewModel = accountContainer.RetrieveUserData(int.Parse(HttpContext.Session.GetString("UserId")));
 
                 if (accountViewModel == null)
                 {
@@ -98,73 +91,63 @@ namespace Hack_Check.Controllers
             return RedirectToAction("Login", "Home");
         }
 
-#endregion
-
-#region Post functions
-
         [HttpPost]
         public IActionResult CreateAccount(CreateAccountViewModel createAccountViewModel) 
         {
-            VerifyNewAccount verifyNewAccount = new VerifyNewAccount();
+            CreateAccountContainer createAccountContainer = new CreateAccountContainer();
 
             //First check on the server if the fields are empty incase they have javascript turned off
-            if (verifyNewAccount.ServerSideValidation(createAccountViewModel) == false)
+            if (createAccountContainer.ValidateAccountCreation(createAccountViewModel) == false)
             {
                 ModelState.AddModelError("", "Server validation failed");
                 return View();
             }
 
             //Check if the username is already in use because you can't have 2 people with the same username
-            if (verifyNewAccount.UsernameAlreadyTaken(createAccountViewModel) == true)
+            if (createAccountContainer.CheckForUsernameTaken(createAccountViewModel) == true)
             {
                 ModelState.AddModelError("","Username is already in use");
                 return View();
             }
 
             //Check if the email is already in use because only one email address use is allowed 
-            if (verifyNewAccount.EmailAlreadyTaken(createAccountViewModel) == true)
+            if (createAccountContainer.CheckForEmailTaken(createAccountViewModel) == true)
             {
                 ModelState.AddModelError("", "Email address is already in use");
                 return View();
             }
 
-            //Check if the passwords match, this can be added to ServerSideValidation
-            if (verifyNewAccount.DoThePasswordsMatch(createAccountViewModel) == false)
-            {
-                return View();
-            }
-
             //Hash and Salt password and add it all to the Database for more secure password storage
-            SetupNewAccount setupNewAccount = new SetupNewAccount();
-            if (setupNewAccount.AddAccountToDatabase(setupNewAccount.DatabaseReadyCreateAccountViewModel(createAccountViewModel)) == true)
+            if (createAccountContainer.AddAccountToDatabase(createAccountViewModel)== true)
             {
                 //Return to the login page so you can login with your new data
                 return RedirectToAction("Login", "Home");
             }
 
+            ModelState.AddModelError("", "Something went wrong while creating your account");
             return View();
         }
 
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel) 
         {
-            VerifyLogin verifyLogin = new VerifyLogin();
+            LoginContainer loginContainer = new LoginContainer();
 
             //First check on the server if the fields are empty incase they have javascript turned off
-            if (verifyLogin.ServerSideValidation(loginViewModel) == false)
+            if (loginContainer.ValidateLogin(loginViewModel) == false)
             {
                 ModelState.AddModelError("", "Username or password is incorrect");
                 return View();
             }
 
-            if (verifyLogin.VerifyLoginData(loginViewModel) == false)
+            if (loginContainer.VerifyLoginData(loginViewModel) == false)
             {
-                ModelState.AddModelError("", "Username or password is inccorect");
+                ModelState.AddModelError("", "Username or password is incorrect");
                 return View();
             }
 
             //I need the ID to store in the session so I can user it in other parts
-            int UserId = verifyLogin.FillLoginWithUserId(loginViewModel.Username);
+            int UserId = loginContainer.GetUserId(loginViewModel);
 
             if (UserId == -1)
             {
@@ -172,37 +155,35 @@ namespace Hack_Check.Controllers
                 return View();
             }
 
-            loginViewModel.UserId = UserId;
-
             //I put the username in a session too for later use
+            HttpContext.Session.SetString("UserId", UserId.ToString());
             HttpContext.Session.SetString("Username", loginViewModel.Username);
-            HttpContext.Session.SetString("UserId", loginViewModel.UserId.ToString());
             return RedirectToAction("Home", "Home");
         }
 
         [HttpPost]
         public IActionResult ChangePassword(AccountViewModel accountViewModel)
         {
-            AccountActions accountActions = new AccountActions();
+            AccountContainer accountContainer = new AccountContainer();
 
-            accountViewModel.Username = HttpContext.Session.GetString("Username");
             accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+            accountViewModel.Username = HttpContext.Session.GetString("Username");
 
             //First check on the server if the fields are empty incase they have javascript turned off
-            if (accountActions.ServerSideValidationPassword(accountViewModel) == false)
+            if (accountContainer.ServerSideValidationPassword(accountViewModel) == false)
             {
                 ModelState.AddModelError("Id", "Please fill out the fields correctly");
                 return View();
             }
 
             //Making sure the user is the actual user 
-            if (accountActions.CheckPassword(accountViewModel) == false)
+            if (accountContainer.VerifyLoginData(accountViewModel) == false)
             {
                 ModelState.AddModelError("OldPassword", "The password was incorrect");
                 return View();
             }
 
-            if (accountActions.UpdatePassword(accountActions.SecurePassword(accountViewModel)) == false)
+            if (accountContainer.UpdatePassword(accountViewModel) == false)
             {
                 ModelState.AddModelError("Id", "Something went wrong updating your password");
                 return View();
@@ -215,13 +196,13 @@ namespace Hack_Check.Controllers
         [HttpPost]
         public IActionResult ChangeUsername(AccountViewModel accountViewModel)
         {
-            AccountActions accountActions = new AccountActions();
+            AccountContainer accountContainer = new AccountContainer();
 
-            accountViewModel.Username = HttpContext.Session.GetString("Username");
             accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
+            accountViewModel.Username = HttpContext.Session.GetString("Username");
 
             //First check on the server if the fields are empty incase they have javascript turned off
-            if (accountActions.ServerSideValidationUsername(accountViewModel) == false)
+            if (accountContainer.ServerSideValidationUsername(accountViewModel) == false)
             {
                 ModelState.AddModelError("Id", "Please fill out the fields correctly");
                 return View();
@@ -230,20 +211,20 @@ namespace Hack_Check.Controllers
             accountViewModel.Password = accountViewModel.OldPassword;
 
             //Making sure the user is the actual user and also using this to change the password later on
-            if (accountActions.CheckPassword(accountViewModel) == false)
+            if (accountContainer.VerifyLoginData(accountViewModel) == false)
             {
                 ModelState.AddModelError("OldPassword", "The password was incorrect");
                 return View();
             }
 
             //Check if the username is already in use because you can't have 2 people with the same username
-            if (accountActions.CheckUsernameAvailable(accountViewModel) == false)
+            if (accountContainer.CheckUsernameAvailable(accountViewModel) == false)
             {
                 ModelState.AddModelError("NewUsername", "Username is already in use");
                 return View();
             }
 
-            if (accountActions.UpdateUsername(accountViewModel) == false)
+            if (accountContainer.UpdateUsername(accountViewModel) == false)
             {
                 ModelState.AddModelError("Id", "Failed to update your username");
                 return View();
@@ -252,7 +233,7 @@ namespace Hack_Check.Controllers
             accountViewModel.Username = accountViewModel.NewUsername;
 
             //Because the password is stored cominbed in a way with the username I need to update the password to reflect the change in username
-            if (accountActions.UpdatePassword(accountActions.SecurePassword(accountViewModel)) == false)
+            if (accountContainer.UpdatePassword(accountViewModel) == false)
             {
                 ModelState.AddModelError("Id", "Failed to update your username");
                 return View();
@@ -263,9 +244,7 @@ namespace Hack_Check.Controllers
             ModelState.AddModelError("", "Username has been updated");
             return View();
         }
-#endregion
 
-#region Other functions
         public IActionResult LogoutUser()
         {
             //Clear the session for new use
@@ -287,6 +266,5 @@ namespace Hack_Check.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-#endregion
     }
 }
