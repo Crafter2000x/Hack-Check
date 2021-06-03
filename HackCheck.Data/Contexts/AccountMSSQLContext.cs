@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HackCheck.Data
 {
@@ -43,47 +39,8 @@ namespace HackCheck.Data
                 }
             }
         }
-        public bool ServerSideValidationUsername(AccountDTO accountDTO) 
-        {
-            // Make sure non of the fields are empty
-            if (accountDTO.OldPassword == null || accountDTO.Id <= 0 || accountDTO.Username == null || accountDTO.NewUsername == null)
-            {
-                return false;
-            }
 
-            //Check for username requirments
-            if (accountDTO.NewUsername.Length < 5 || accountDTO.NewUsername.Length > 24)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ServerSideValidationPassword(AccountDTO accountDTO)
-        {
-            // Make sure non of the fields are empty
-            if (accountDTO.Password == null || accountDTO.ConfirmPassword == null || accountDTO.OldPassword == null || accountDTO.Id <= 0 || accountDTO.Username == null)
-            {
-                return false;
-            }
-
-            //Check if the passwords match
-            if (accountDTO.Password != accountDTO.ConfirmPassword)
-            {
-                return false;
-            }
-
-            //Check for password requirments
-            if (accountDTO.Password.Length < 6 || accountDTO.Password.Length > 100)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool CheckUsernameAvailable(AccountDTO accountDTO) 
+        public bool CheckUsernameAvailable(AccountDTO accountDTO)
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
@@ -104,33 +61,6 @@ namespace HackCheck.Data
                     return true;
                 }
             }
-        }
-
-        public bool VerifyLoginData(AccountDTO accountDTO) 
-        {
-            accountDTO.Salt = RetrieveUserSalt(accountDTO.Username);
-
-            char firstletter = char.Parse(accountDTO.Username.Substring(0, 1));
-            int index = char.ToUpper(firstletter) - 64;
-
-            // If is L or lower puts the salt in front of the password if higher the L puts it after, harder to brute force
-            if (index <= 13)
-            {
-                accountDTO.OldPassword = accountDTO.Salt + accountDTO.OldPassword;
-            }
-            else if (index > 13)
-            {
-                accountDTO.OldPassword = accountDTO.OldPassword + accountDTO.Salt;
-            }
-
-            accountDTO.OldPassword = ComputeStringToShHasa256Hash(accountDTO.OldPassword);
-
-            if (MatchLoginData(accountDTO))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private string RetrieveUserSalt(string Username)
@@ -191,7 +121,7 @@ namespace HackCheck.Data
             }
         }
 
-        public bool UpdateUsername(AccountDTO accountDTO) 
+        public bool UpdateUsername(AccountDTO accountDTO)
         {
             using (SqlConnection tConnection = new SqlConnection(ConnectionString))
             {
@@ -213,7 +143,7 @@ namespace HackCheck.Data
             return false;
         }
 
-        public bool UpdatePassword(AccountDTO accountDTO) 
+        public bool UpdatePassword(AccountDTO accountDTO)
         {
             accountDTO = SecurePassword(accountDTO);
 
@@ -233,6 +163,75 @@ namespace HackCheck.Data
                 {
                     return true;
                 }
+            }
+
+            return false;
+        }
+
+        public bool ServerSideValidationUsername(AccountDTO accountDTO) 
+        {
+            // Make sure non of the fields are empty
+            if (accountDTO.OldPassword == null || accountDTO.Id <= 0 || accountDTO.Username == null || accountDTO.NewUsername == null)
+            {
+                return false;
+            }
+
+            //Check for username requirments
+            if (accountDTO.NewUsername.Length < 5 || accountDTO.NewUsername.Length > 24)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool ServerSideValidationPassword(AccountDTO accountDTO)
+        {
+            // Make sure non of the fields are empty
+            if (accountDTO.Password == null || accountDTO.ConfirmPassword == null || accountDTO.OldPassword == null || accountDTO.Id <= 0 || accountDTO.Username == null)
+            {
+                return false;
+            }
+
+            //Check if the passwords match
+            if (accountDTO.Password != accountDTO.ConfirmPassword)
+            {
+                return false;
+            }
+
+            //Check for password requirments
+            if (accountDTO.Password.Length < 6 || accountDTO.Password.Length > 100)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        
+
+        public bool VerifyLoginData(AccountDTO accountDTO) 
+        {
+            accountDTO.Salt = RetrieveUserSalt(accountDTO.Username);
+
+            char firstletter = char.Parse(accountDTO.Username.Substring(0, 1));
+            int index = char.ToUpper(firstletter) - 64;
+
+            // If is L or lower puts the salt in front of the password if higher the L puts it after, harder to brute force
+            if (index <= 13)
+            {
+                accountDTO.OldPassword = accountDTO.Salt + accountDTO.OldPassword;
+            }
+            else if (index > 13)
+            {
+                accountDTO.OldPassword = accountDTO.OldPassword + accountDTO.Salt;
+            }
+
+            accountDTO.OldPassword = ComputeStringToShHasa256Hash(accountDTO.OldPassword);
+
+            if (MatchLoginData(accountDTO))
+            {
+                return true;
             }
 
             return false;

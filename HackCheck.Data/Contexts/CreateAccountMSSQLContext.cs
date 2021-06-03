@@ -1,13 +1,11 @@
 ﻿using System.Data.SqlClient;
-using System.Security.Cryptography;
-using System.Text;
+using HackCheck.Data.Classes;
 
 namespace HackCheck.Data
 {
     class CreateAccountMSSQLContext : ICreateAccountContext
     {
         private static readonly string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
-        private static int saltLengthLimit = 32;
 
         public bool AddAccountToDatabase(CreateAccountDTO accountDTO)
         {
@@ -133,7 +131,7 @@ namespace HackCheck.Data
             //Getting previous checked data into the model
             DbReadyDTO.Username = createaccountDTO.Username;
             DbReadyDTO.Email = createaccountDTO.Email;
-            DbReadyDTO.Salt = GetSalt();
+            DbReadyDTO.Salt = SHA256Encryption.GetSalt();
 
             // Getting position in the alphabet of the first letter in the username and converting it to a index based on ASCII logic
             char firstletter = char.Parse(DbReadyDTO.Username.Substring(0, 1));
@@ -149,51 +147,9 @@ namespace HackCheck.Data
                 DbReadyDTO.Password = createaccountDTO.Password + DbReadyDTO.Salt;
             }
 
-            DbReadyDTO.Password = ComputeStringToShHasa256Hash(DbReadyDTO.Password);
+            DbReadyDTO.Password = SHA256Encryption.ComputeStringToShHasa256Hash(DbReadyDTO.Password);
 
             return DbReadyDTO;
-        }
-
-
-        private static string ComputeStringToShHasa256Hash(string plainText)
-        {
-            //Create a SHA256 hash from string   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                //Computing Hash - returns here byte array
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(plainText));
-
-                //now convert byte array to a string   
-                StringBuilder stringbuilder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    stringbuilder.Append(bytes[i].ToString("x2"));
-                }
-                return stringbuilder.ToString();
-            }
-        }
-
-        private static string GetSalt()
-        {
-            byte[] bytes = GetSalt(saltLengthLimit);
-            StringBuilder stringbuilder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                stringbuilder.Append(bytes[i].ToString("x2"));
-            }
-
-            return stringbuilder.ToString();
-        }
-
-        //Generate a salt based on a max lenght and CryptoService
-        private static byte[] GetSalt(int maximumSaltLength)
-        {
-            var salt = new byte[maximumSaltLength];
-            using (var random = new RNGCryptoServiceProvider())
-            {
-                random.GetNonZeroBytes(salt);
-            }
-            return salt;
         }
     }
 }

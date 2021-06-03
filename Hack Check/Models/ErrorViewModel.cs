@@ -1,4 +1,3 @@
-using System;
 
 namespace Hack_Check.Models
 {
