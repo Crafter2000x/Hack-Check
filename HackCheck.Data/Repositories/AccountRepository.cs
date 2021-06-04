@@ -15,7 +15,7 @@ namespace HackCheck.Data
             context = new AccountMSSQLContext();
         }
 
-        public AccountDTO RetrieveUserData(int UserId) 
+        public virtual AccountDTO RetrieveUserData(int UserId) 
         {
             return context.RetrieveUserData(UserId);
         }
@@ -29,19 +29,19 @@ namespace HackCheck.Data
             return context.ServerSideValidationPassword(accountDTO);
         }
 
-        public bool CheckUsernameAvailable(AccountDTO accountDTO) 
+        public virtual bool CheckUsernameAvailable(AccountDTO accountDTO) 
         {
             return context.CheckUsernameAvailable(accountDTO);
         }
-        public bool VerifyLoginData(AccountDTO accountDTO) 
+        public virtual bool VerifyLoginData(AccountDTO accountDTO) 
         {
             return context.VerifyLoginData(accountDTO);
         }
-        public bool UpdateUsername(AccountDTO accountDTO) 
+        public virtual bool UpdateUsername(AccountDTO accountDTO) 
         {
             return context.UpdateUsername(accountDTO);
         }
-        public bool UpdatePassword(AccountDTO accountDTO)
+        public virtual bool UpdatePassword(AccountDTO accountDTO)
         {
             return context.UpdatePassword(accountDTO);
         }

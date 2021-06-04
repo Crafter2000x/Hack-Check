@@ -4,22 +4,30 @@ namespace HackCheck.Business
 {
     public class LoginContainer
     {
+        private LoginRepository Repo;
+
+        public LoginContainer(LoginRepository _Repo)
+        {
+            Repo = _Repo;
+        }
+
+        public LoginContainer()
+        {
+            Repo = new LoginRepository();
+        }
         public bool ValidateLogin(LoginViewModel loginViewModel)
         {
-            LoginRepository repo = new LoginRepository();
-            return repo.ValidateLogin(new LoginDTO { Username = loginViewModel.Username, Password = loginViewModel.Password });
+            return Repo.ValidateLogin(new LoginDTO { Username = loginViewModel.Username, Password = loginViewModel.Password });
         }
 
         public bool VerifyLoginData(LoginViewModel loginViewModel) 
         {
-            LoginRepository repo = new LoginRepository();
-            return repo.VerifyLoginData(new LoginDTO { Username = loginViewModel.Username, Password = loginViewModel.Password });    
+            return Repo.VerifyLoginData(new LoginDTO { Username = loginViewModel.Username, Password = loginViewModel.Password });    
         }
 
         public int GetUserId(LoginViewModel loginViewModel)
         {
-            LoginRepository repo = new LoginRepository();
-            return repo.GetUserId(new LoginDTO { Username = loginViewModel.Username});
+            return Repo.GetUserId(new LoginDTO { Username = loginViewModel.Username});
         }
     }
 }

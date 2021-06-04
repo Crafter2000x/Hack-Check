@@ -25,12 +25,12 @@ namespace HackCheck.Data
             return context.ValidateLogin(loginDTO);
         }
 
-        public bool VerifyLoginData(LoginDTO loginDTO) 
+        public virtual bool VerifyLoginData(LoginDTO loginDTO) 
         {
             return context.VerifyLoginData(loginDTO);
         }
 
-        public int GetUserId(LoginDTO loginDTO) 
+        public virtual int GetUserId(LoginDTO loginDTO) 
         {
             return context.GetUserId(loginDTO);
         }

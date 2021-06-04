@@ -4,28 +4,36 @@ namespace HackCheck.Business
 {
     public class CreateAccountContainer
     {
+        private CreateAccountRepository Repo;
+
+        public CreateAccountContainer(CreateAccountRepository _Repo)
+        {
+            Repo = _Repo;
+        }
+
+        public CreateAccountContainer()
+        {
+            Repo = new CreateAccountRepository();
+        }
+
         public bool AddAccountToDatabase(CreateAccountViewModel createaccountViewModel ) 
         {
-            CreateAccountRepository repo = new CreateAccountRepository();
-            return repo.AddAccountToDatabase(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
+            return Repo.AddAccountToDatabase(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
         }
 
         public bool ValidateAccountCreation(CreateAccountViewModel createaccountViewModel) 
         {
-            CreateAccountRepository repo = new CreateAccountRepository();
-            return repo.ValidateAccountCreation(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
+            return Repo.ValidateAccountCreation(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
         }
 
         public bool CheckForEmailTaken(CreateAccountViewModel createaccountViewModel)
         {
-            CreateAccountRepository repo = new CreateAccountRepository();
-            return repo.CheckForEmailTaken(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
+            return Repo.CheckForEmailTaken(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
         }
 
         public bool CheckForUsernameTaken(CreateAccountViewModel createaccountViewModel)
         {
-            CreateAccountRepository repo = new CreateAccountRepository();
-            return repo.CheckForUsernameTaken(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
+            return Repo.CheckForUsernameTaken(new CreateAccountDTO { Username = createaccountViewModel.Username, Password = createaccountViewModel.Password, ConfirmPassword = createaccountViewModel.ConfirmPassword, Email = createaccountViewModel.Email });
         }
     }
 }

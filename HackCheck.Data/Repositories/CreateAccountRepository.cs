@@ -20,17 +20,17 @@ namespace HackCheck.Data
             this.context = new CreateAccountMSSQLContext();
         }
 
-        public bool AddAccountToDatabase(CreateAccountDTO createaccountDTO) 
+        public virtual bool AddAccountToDatabase(CreateAccountDTO createaccountDTO) 
         {
             return context.AddAccountToDatabase(createaccountDTO);
         }
 
-        public bool CheckForUsernameTaken(CreateAccountDTO createaccountDTO) 
+        public virtual bool CheckForUsernameTaken(CreateAccountDTO createaccountDTO) 
         {
             return context.CheckForUsernameTaken(createaccountDTO);
         }
 
-        public bool CheckForEmailTaken(CreateAccountDTO createaccountDTO)
+        public virtual bool CheckForEmailTaken(CreateAccountDTO createaccountDTO)
         {
             return context.CheckForEmailTaken(createaccountDTO);
         }
