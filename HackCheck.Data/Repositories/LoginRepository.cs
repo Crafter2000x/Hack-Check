@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,9 +16,9 @@ namespace HackCheck.Data
             this.context = context;
         }
 
-        public LoginRepository()
+        public LoginRepository(IConfiguration _Configuration)
         {
-            this.context = new LoginMSSQLContext();
+            this.context = new LoginMSSQLContext(_Configuration);
         }
 
         public bool ValidateLogin(LoginDTO loginDTO) 

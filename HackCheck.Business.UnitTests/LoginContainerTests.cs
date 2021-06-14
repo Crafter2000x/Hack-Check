@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HackCheck.Data;
 using Moq;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Business.UnitTests
 {
@@ -12,7 +13,7 @@ namespace HackCheck.Business.UnitTests
         {
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Admin", Password = "Password" };
-            LoginContainer Container = new LoginContainer();
+            LoginContainer Container = new LoginContainer(new Mock<IConfiguration>().Object);
             bool assert;
             // Act
             assert = Container.ValidateLogin(loginViewModel);
@@ -25,7 +26,7 @@ namespace HackCheck.Business.UnitTests
         {
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Ad", Password = "Pass" };
-            LoginContainer Container = new LoginContainer();
+            LoginContainer Container = new LoginContainer(new Mock<IConfiguration>().Object);
             bool assert;
             // Act
             assert = Container.ValidateLogin(loginViewModel);
@@ -39,7 +40,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Admin", Password = "Password"};
 
-            var MockLoginRepo = new Mock<LoginRepository>();
+            var MockLoginRepo = new Mock<LoginRepository>(new Mock<IConfiguration>().Object);
 
             MockLoginRepo.Setup(x => x.VerifyLoginData(It.IsAny<LoginDTO>())).Returns(true);
 
@@ -63,7 +64,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Admin", Password = "Password" };
 
-            var MockLoginRepo = new Mock<LoginRepository>();
+            var MockLoginRepo = new Mock<LoginRepository>(new Mock<IConfiguration>().Object);
 
             MockLoginRepo.Setup(x => x.VerifyLoginData(It.IsAny<LoginDTO>())).Returns(false);
 
@@ -87,7 +88,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Admin", Password = "Password" };
 
-            var MockLoginRepo = new Mock<LoginRepository>();
+            var MockLoginRepo = new Mock<LoginRepository>(new Mock<IConfiguration>().Object);
 
             MockLoginRepo.Setup(x => x.GetUserId(It.IsAny<LoginDTO>())).Returns(1);
 
@@ -111,7 +112,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             LoginViewModel loginViewModel = new LoginViewModel { Username = "Admin", Password = "Password" };
 
-            var MockLoginRepo = new Mock<LoginRepository>();
+            var MockLoginRepo = new Mock<LoginRepository>(new Mock<IConfiguration>().Object);
 
             MockLoginRepo.Setup(x => x.GetUserId(It.IsAny<LoginDTO>())).Returns(-1);
 

@@ -1,4 +1,5 @@
 ﻿using HackCheck.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Business
 {
@@ -11,9 +12,9 @@ namespace HackCheck.Business
             Repo = _Repo;
         }
 
-        public LoginContainer()
+        public LoginContainer(IConfiguration _Configuration)
         {
-            Repo = new LoginRepository();
+            Repo = new LoginRepository(_Configuration);
         }
         public bool ValidateLogin(LoginViewModel loginViewModel)
         {

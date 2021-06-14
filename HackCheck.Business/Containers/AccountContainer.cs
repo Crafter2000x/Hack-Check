@@ -1,4 +1,5 @@
 ﻿using HackCheck.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Business
 {
@@ -11,9 +12,9 @@ namespace HackCheck.Business
             Repo = _Repo;
         }
 
-        public AccountContainer()
+        public AccountContainer(IConfiguration _Configuration )
         {
-            Repo = new AccountRepository();
+            Repo = new AccountRepository(_Configuration);
         }
 
         public AccountViewModel RetrieveUserData(int UserId) 

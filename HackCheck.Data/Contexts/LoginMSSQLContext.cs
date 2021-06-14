@@ -1,11 +1,17 @@
 ﻿using System.Data.SqlClient;
 using HackCheck.Data.Classes;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Data
 {
     class LoginMSSQLContext : ILoginContext
     {
-        private static readonly string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
+        private string ConnectionString;
+
+        public LoginMSSQLContext(IConfiguration _configuration)
+        {
+            ConnectionString = _configuration.GetConnectionString("HackCheck");
+        }
 
         public int GetUserId(LoginDTO loginDTO)
         {

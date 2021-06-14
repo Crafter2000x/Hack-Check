@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HackCheck.Data;
 using Moq;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Business.UnitTests
 {
@@ -12,7 +13,7 @@ namespace HackCheck.Business.UnitTests
         {
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
-            CreateAccountContainer Container = new CreateAccountContainer();
+            CreateAccountContainer Container = new CreateAccountContainer(new Mock<IConfiguration>().Object);
             bool assert;
             // Act
             assert = Container.ValidateAccountCreation(createAccountViewModel);
@@ -25,7 +26,7 @@ namespace HackCheck.Business.UnitTests
         {
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Ad", Password = "Password1", ConfirmPassword = "Password2", Email = "Admin.com" };
-            CreateAccountContainer Container = new CreateAccountContainer();
+            CreateAccountContainer Container = new CreateAccountContainer(new Mock<IConfiguration>().Object);
             bool assert;
             // Act
             assert = Container.ValidateAccountCreation(createAccountViewModel);
@@ -39,7 +40,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.AddAccountToDatabase(It.IsAny<CreateAccountDTO>())).Returns(true);
 
@@ -63,7 +64,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.AddAccountToDatabase(It.IsAny<CreateAccountDTO>())).Returns(false);
 
@@ -87,7 +88,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.CheckForEmailTaken(It.IsAny<CreateAccountDTO>())).Returns(true);
 
@@ -112,7 +113,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.CheckForEmailTaken(It.IsAny<CreateAccountDTO>())).Returns(false);
 
@@ -137,7 +138,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.CheckForUsernameTaken(It.IsAny<CreateAccountDTO>())).Returns(true);
 
@@ -162,7 +163,7 @@ namespace HackCheck.Business.UnitTests
             // Arrange
             CreateAccountViewModel createAccountViewModel = new CreateAccountViewModel { Username = "Admin", Password = "Password", ConfirmPassword = "Password", Email = "Admin@mail.com" };
 
-            var MockCreateAccountRepo = new Mock<CreateAccountRepository>();
+            var MockCreateAccountRepo = new Mock<CreateAccountRepository>(new Mock<IConfiguration>().Object);
 
             MockCreateAccountRepo.Setup(x => x.CheckForUsernameTaken(It.IsAny<CreateAccountDTO>())).Returns(false);
 

@@ -1,11 +1,18 @@
 ﻿using System.Data.SqlClient;
 using HackCheck.Data.Classes;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Data
 {
     class CreateAccountMSSQLContext : ICreateAccountContext
     {
-        private static readonly string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
+
+        private string ConnectionString;
+
+        public CreateAccountMSSQLContext(IConfiguration _Configuration)
+        {
+            ConnectionString = _Configuration.GetConnectionString("HackCheck");
+        }
 
         public bool AddAccountToDatabase(CreateAccountDTO accountDTO)
         {

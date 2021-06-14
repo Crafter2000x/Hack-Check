@@ -1,12 +1,20 @@
-﻿using System.Data.SqlClient;
+﻿using HackCheck.Data.Classes;
+using Microsoft.Extensions.Configuration;
+using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace HackCheck.Data
 {
+
     class AccountMSSQLContext : IAccountContext
     {
-        private static readonly string ConnectionString = "Server=localhost\\SQLEXPRESS;Database=HackCheckDB;Integrated Security=False;User Id='HackerCheckMaster'; Password='HackerCheckMasterPassword'";
+        private string ConnectionString;
+
+        public AccountMSSQLContext(IConfiguration _Configuration)
+        {
+            ConnectionString = _Configuration.GetConnectionString("HackCheck");
+        }
 
         public AccountDTO RetrieveUserData(int UserId)
         {
@@ -227,7 +235,7 @@ namespace HackCheck.Data
                 accountDTO.OldPassword = accountDTO.OldPassword + accountDTO.Salt;
             }
 
-            accountDTO.OldPassword = ComputeStringToShHasa256Hash(accountDTO.OldPassword);
+            accountDTO.OldPassword = SHA256Encryption.ComputeStringToShHasa256Hash(accountDTO.OldPassword);
 
             if (MatchLoginData(accountDTO))
             {
@@ -239,7 +247,7 @@ namespace HackCheck.Data
 
         private AccountDTO SecurePassword(AccountDTO accountDTO) 
         {
-            accountDTO.Salt = GetSalt();
+            accountDTO.Salt = SHA256Encryption.GetSalt();
 
             // Getting position in the alphabet of the first letter in the username and converting it to a index based on ASCII logic
             char firstletter = char.Parse(accountDTO.Username.Substring(0, 1));
@@ -255,54 +263,9 @@ namespace HackCheck.Data
                 accountDTO.Password = accountDTO.Password + accountDTO.Salt;
             }
 
-            accountDTO.Password = ComputeStringToShHasa256Hash(accountDTO.Password);
+            accountDTO.Password = SHA256Encryption.ComputeStringToShHasa256Hash(accountDTO.Password);
 
             return accountDTO;
-        }
-
-
-
-        private static string ComputeStringToShHasa256Hash(string plainText)
-        {
-            //Create a SHA256 hash from string   
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                //Computing Hash - returns here byte array
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(plainText));
-
-                //now convert byte array to a string   
-                StringBuilder stringbuilder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    stringbuilder.Append(bytes[i].ToString("x2"));
-                }
-                return stringbuilder.ToString();
-            }
-        }
-
-        //Converts the salt into a string to use
-        private static readonly int saltLengthLimit = 32;
-        private static string GetSalt()
-        {
-            byte[] bytes = GetSalt(saltLengthLimit);
-            StringBuilder stringbuilder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                stringbuilder.Append(bytes[i].ToString("x2"));
-            }
-
-            return stringbuilder.ToString();
-        }
-
-        //Generate a salt based on a max lenght and CryptoService
-        private static byte[] GetSalt(int maximumSaltLength)
-        {
-            var salt = new byte[maximumSaltLength];
-            using (var random = new RNGCryptoServiceProvider())
-            {
-                random.GetNonZeroBytes(salt);
-            }
-            return salt;
         }
     }
 }

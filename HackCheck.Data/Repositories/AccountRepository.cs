@@ -1,4 +1,6 @@
 ﻿
+using Microsoft.Extensions.Configuration;
+
 namespace HackCheck.Data
 {
     public class AccountRepository
@@ -10,9 +12,9 @@ namespace HackCheck.Data
             this.context = context;
         }
 
-        public AccountRepository()
+        public AccountRepository(IConfiguration _Configuration)
         {
-            context = new AccountMSSQLContext();
+            context = new AccountMSSQLContext(_Configuration);
         }
 
         public virtual AccountDTO RetrieveUserData(int UserId) 

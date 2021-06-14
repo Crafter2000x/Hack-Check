@@ -1,19 +1,20 @@
 ﻿using Hack_Check.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using System.Diagnostics;
 using HackCheck.Business;
+using Microsoft.Extensions.Configuration;
+
 
 namespace Hack_Check.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IConfiguration Configuration;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IConfiguration _Configuration)
         {
-            _logger = logger;
+            Configuration = _Configuration;
         }
 
         public IActionResult Index()
@@ -57,7 +58,7 @@ namespace Hack_Check.Controllers
         {
             if (CheckForSession())
             {
-                AccountContainer accountContainer = new AccountContainer();
+                AccountContainer accountContainer = new AccountContainer(Configuration);
                 AccountViewModel accountViewModel = accountContainer.RetrieveUserData(int.Parse(HttpContext.Session.GetString("UserId")));
 
                 if (accountViewModel == null)
@@ -94,7 +95,7 @@ namespace Hack_Check.Controllers
         [HttpPost]
         public IActionResult CreateAccount(CreateAccountViewModel createAccountViewModel) 
         {
-            CreateAccountContainer createAccountContainer = new CreateAccountContainer();
+            CreateAccountContainer createAccountContainer = new CreateAccountContainer(Configuration);
 
             //First check on the server if the fields are empty incase they have javascript turned off
             if (createAccountContainer.ValidateAccountCreation(createAccountViewModel) == false)
@@ -131,7 +132,7 @@ namespace Hack_Check.Controllers
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel) 
         {
-            LoginContainer loginContainer = new LoginContainer();
+            LoginContainer loginContainer = new LoginContainer(Configuration);
 
             //First check on the server if the fields are empty incase they have javascript turned off
             if (loginContainer.ValidateLogin(loginViewModel) == false)
@@ -164,7 +165,7 @@ namespace Hack_Check.Controllers
         [HttpPost]
         public IActionResult ChangePassword(AccountViewModel accountViewModel)
         {
-            AccountContainer accountContainer = new AccountContainer();
+            AccountContainer accountContainer = new AccountContainer(Configuration);
 
             accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
             accountViewModel.Username = HttpContext.Session.GetString("Username");
@@ -196,7 +197,7 @@ namespace Hack_Check.Controllers
         [HttpPost]
         public IActionResult ChangeUsername(AccountViewModel accountViewModel)
         {
-            AccountContainer accountContainer = new AccountContainer();
+            AccountContainer accountContainer = new AccountContainer(Configuration);
 
             accountViewModel.Id = int.Parse(HttpContext.Session.GetString("UserId"));
             accountViewModel.Username = HttpContext.Session.GetString("Username");

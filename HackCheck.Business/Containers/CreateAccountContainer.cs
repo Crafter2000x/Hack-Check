@@ -1,4 +1,5 @@
 ﻿using HackCheck.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace HackCheck.Business
 {
@@ -11,9 +12,9 @@ namespace HackCheck.Business
             Repo = _Repo;
         }
 
-        public CreateAccountContainer()
+        public CreateAccountContainer(IConfiguration _Configuration)
         {
-            Repo = new CreateAccountRepository();
+            Repo = new CreateAccountRepository(_Configuration);
         }
 
         public bool AddAccountToDatabase(CreateAccountViewModel createaccountViewModel ) 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,14 +11,14 @@ namespace HackCheck.Data
     {
         private ICreateAccountContext context;
 
-        public CreateAccountRepository(ICreateAccountContext context)
+        public CreateAccountRepository(ICreateAccountContext _context)
         {
-            this.context = context;
+            context = _context;
         }
 
-        public CreateAccountRepository()
+        public CreateAccountRepository(IConfiguration _Configuration)
         {
-            this.context = new CreateAccountMSSQLContext();
+            context = new CreateAccountMSSQLContext(_Configuration);
         }
 
         public virtual bool AddAccountToDatabase(CreateAccountDTO createaccountDTO) 
